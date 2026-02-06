@@ -24,7 +24,6 @@ This project converts ordinary RGB images into tens of thousands of 3D particles
   </tr>
 </table>
 
-
 ----
 
 <table>
@@ -52,9 +51,6 @@ This project converts ordinary RGB images into tens of thousands of 3D particles
 
 
 ## ✨ Core Features
-
-* **🖼️ Image to Particles**
-  Upload any RGB image (JPG/PNG) and generate a pixel-based particle matrix.
 
 * **🧊 Depth Reconstruction**
   Upload a single-channel depth map and reconstruct a real-time 3D point cloud using grayscale depth values.
@@ -108,7 +104,7 @@ http://localhost:5173
 ### Basic Controls
 
 1. **Upload Image**
-   Click **`UPLOAD IMAGE`** and select a normal RGB image.
+   Click **`UPLOAD IMAGE`** and select a RGB image.
 
 2. **Camera Controls**
 
@@ -133,16 +129,6 @@ Steps:
 
 ---
 
-### Effects
-
-* **`EXPLODE PARTICLES`**
-  Scatter particles using noise-based animation.
-
-* **`ASSEMBLE PARTICLES`**
-  Restore particles into compact image / model form.
-
----
-
 ## 🧩 Project Structure
 
 ```
@@ -155,39 +141,6 @@ src/
 │   └── gifLoader.js        # GIF parsing and frame processing
 ├── App.vue                 # Root component
 └── main.js                 # Entry point
-```
-
----
-
-## 🧠 Core Principle (Shader Logic)
-
-The core of this project lies in a custom **Vertex Shader**.
-Instead of moving a mesh, it directly moves **tens of thousands of vertices**.
-
-```glsl
-// Pseudocode logic
-void main() {
-    // 1. Base coordinates
-    float x = offset.x - width * 0.5;
-    float y = height * 0.5 - offset.y;
-    
-    float z = 0.0;
-
-    // 2. If depth map exists
-    if (uHasDepth > 0.5) {
-        // Read depth value
-        float depthVal = texture2D(uDepthTexture, vuv).r;
-        // Map to Z axis: black -> high, white -> low
-        z = (1.0 - depthVal) * uDepthScale;
-    } else {
-        // 3. Without depth, apply noise explosion
-        float noise = snoise(offset + uTime);
-        z = noise * uThick;
-    }
-
-    // 4. Final position
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(x, y, z, 1.0);
-}
 ```
 
 ---
